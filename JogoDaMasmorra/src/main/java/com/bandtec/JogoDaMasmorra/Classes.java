@@ -3,7 +3,7 @@ package com.bandtec.JogoDaMasmorra;
 public abstract class Classes implements Dano {
     // Foram utilizadas uma classe abstrata para servir de base para os personagens das classes (contexto do jogo)
     // "Mago" e "Guerreiro" junto com uma interface com cálculos de dano para ser implementada em todas
-    // as classes (programação) (Guerreiro, Mago e Pet), pet é uma classe que não herda de "Classes"
+    // as classes (programação) Guerreiro, Mago e Pet, pet é uma classe que não herda de "Classes"
     // pois no contexto do jogo o Pet tem somente nome e pontos
     // de ataque e não é em si uma classe jogável e diferentemente das
     // outras classes ela não "toma dano" mas ainda "ataca".
@@ -42,9 +42,6 @@ public abstract class Classes implements Dano {
         return pontosVelocidade;
     }
 
-    public void setPontosDeVida(Integer pontosDeVida) {
-        this.pontosDeVida = pontosDeVida;
-    }
 
     @Override
     public String toString() {

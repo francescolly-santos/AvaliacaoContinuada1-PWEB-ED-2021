@@ -1,23 +1,24 @@
 package com.bandtec.JogoDaMasmorra;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/IniciarMasmorra")
+@RequestMapping("/iniciarMasmorra")
 public class Controller {
     private List<Dano> listaPersonagens = new ArrayList<>();
+    private List<Dano> listaPet = new ArrayList<>();
+
+    //Variável para método validação do método Get
+    Integer acesso = 0;
 
     Random random = new Random();
 
     //Objeto do tipo "Guerreiro" para uso dos métodos.
     private Guerreiro guerreiro = new Guerreiro(
-            "Olaf",
+            "Olaf (Guerreiro)",
             20,
             15,
             100,
@@ -26,7 +27,7 @@ public class Controller {
 
     //Objeto do tipo "Mago" para uso dos métodos.
     private Mago mago = new Mago(
-            "Merlin",
+            "Merlin (Mago)",
             10,
             30,
             95,
@@ -38,39 +39,6 @@ public class Controller {
             12
     );
 
-    //Objetos da lista para trabalhar com os endpoints.
-    public Controller() {
-        this.listaPersonagens.add(new Guerreiro(
-                "Andrew (Guerreiro)",
-                20,
-                20,
-                101,
-                "Sopro do Dragão")
-        );
-        this.listaPersonagens.add(new Guerreiro(
-                "Jackson (Guerreiro)",
-                16,
-                18,
-                103,
-                "Força do vendaval")
-        );
-        this.listaPersonagens.add(new Mago(
-                "Ganondorf (Mago)",
-                13,
-                31,
-                96,
-                "Brasa de Bami")
-        );
-        this.listaPersonagens.add(new Mago(
-                "Patolino (Mago)",
-                12,
-                30,
-                99,
-                "Cajado de Rabadon")
-        );
-
-    }
-
     //Endpoint da tela inicial
     @GetMapping
     public String inicio(){
@@ -81,11 +49,48 @@ public class Controller {
                 " ataca)."; }
 
     //Endpoints da lista de personagens (Exceto o mago e guerreiro intânciado).
-    @GetMapping("/MeusPersonagens")
+    //Endpoints
+    @GetMapping("/meusPersonagens")
     public List<Dano> personagens() {
-        return this.listaPersonagens; }
-
-    @GetMapping("/MeusPersonagens/{posicao}")
+        if (acesso == 0) {
+            this.listaPersonagens.add(guerreiro);
+            this.listaPersonagens.add(new Guerreiro(
+                    "Andrew (Guerreiro)",
+                    20,
+                    20,
+                    101,
+                    "Sopro do Dragão")
+            );
+            this.listaPersonagens.add(new Guerreiro(
+                    "Jackson (Guerreiro)",
+                    16,
+                    18,
+                    103,
+                    "Força do vendaval")
+            );
+            this.listaPersonagens.add(mago);
+            this.listaPersonagens.add(new Mago(
+                    "Ganondorf (Mago)",
+                    13,
+                    31,
+                    96,
+                    "Brasa de Bami")
+            );
+            this.listaPersonagens.add(new Mago(
+                    "Patolino (Mago)",
+                    12,
+                    30,
+                    99,
+                    "Cajado de Rabadon")
+            );
+            acesso+=1;
+            return this.listaPersonagens;
+        } else{
+            return this.listaPersonagens;
+        }
+    }
+    //Endpoints para buscar objeto por posição.
+    @GetMapping("/meusPersonagens/{posicao}")
     public Dano recuperar(@PathVariable int posicao) {
         if (this.listaPersonagens.size() > posicao) {
             return this.listaPersonagens.get(posicao);
@@ -94,41 +99,55 @@ public class Controller {
         }
     }
 
+    @DeleteMapping("/apagarPersonagem/{posicao}")
+    public String deletePersonagem(@PathVariable int posicao){
+        if(posicao < listaPersonagens.size()){
+            listaPersonagens.remove(posicao);
+            return "Personagem excluido com sucesso.";
+        }else{
+            return "Personagem não encontrado.";    
+        }
+    }
+
     //Endpoints do guerreiro.
-    @GetMapping("/Guerreiro/Atacar")
-    public String guerreiroAtaque() {
-        return guerreiro.atacar();
+    @GetMapping("/guerreiro")
+    public Guerreiro guerreiroInfo(){
+        return guerreiro;
     }
 
-    @GetMapping("/Guerreiro/Grito")
-    public String guerreiroGrito() {
-        return guerreiro.gritoDeGuerra();
-    }
-
-    @GetMapping("/Guerreiro/Fugir")
-    public String guerreiroFuga() {
-        return guerreiro.fugir();
+    @GetMapping("/guerreiro/{acao}")
+    public String guerreiroAcao(@PathVariable String acao) {
+        if(acao.equals("atacar")) {
+            return guerreiro.atacar();
+        }else if(acao.equals("gritar")){
+            return guerreiro.gritoDeGuerra();
+        }else if(acao.equals("fugir")){
+            return guerreiro.fugir();
+        }else{
+            return "Não é uma ação válida.";
+        }
     }
 
     //Endpoints do mago.
-    @GetMapping("/Mago/Atacar")
-    public String magoAtaque() {
-        return mago.atacar();
+    @GetMapping("/mago")
+    public Mago magoInfo(){
+        return mago;
     }
 
-    @GetMapping("/Mago/Grito")
-    public String magoGrito() {
-        return mago.gritoDeGuerra();
-    }
-
-    @GetMapping("/Mago/Fugir")
-    public String magoFuga() {
-        return mago.fugir();
+    @GetMapping("/mago/{acao}")
+    public String magoAcao(@PathVariable String acao) {
+        if(acao.equals("atacar")) {
+            return mago.atacar();
+        }else if(acao.equals("gritar")){
+            return mago.gritoDeGuerra();
+        }else if(acao.equals("fugir")){
+            return mago.fugir();
+        }else{
+            return "Não é uma ação válida.";
+        }
     }
 
     //Endpoints do pet.
-    @GetMapping("/Pet/Atacar")
-    public String petAtaque() { return pet.atacar();
-    }
-
+    @GetMapping("/pet/atacar")
+    public String petAtaque() { return pet.atacar(); }
 }
